@@ -6,7 +6,7 @@ let selectedThemeSkin = 'midnight';
 let autonomousEngineName = 'Aether';
 
 // 🔴 ADD YOUR EMBEDDED API KEY HERE AS THE DEFAULT FALLBACK
-const INITIAL_WORKSPACE_API_KEY = "AIzaSyA9fVwoxVohztY8m-QMJqPo-oXw6nyv9a0";
+const INITIAL_WORKSPACE_API_KEY = "YOUR_API_KEY_HERE";
 
 const splashPrompts = [
     "What are we building together today?",
