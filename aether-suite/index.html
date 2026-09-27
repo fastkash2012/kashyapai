@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aether Matrix Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="theme-midnight">
+
+    <div class="toast-notification-center" id="system-toast-layer"></div>
+
+    <div class="ambient-mesh-container">
+        <div class="mesh-blob blob-1"></div>
+        <div class="mesh-blob blob-2"></div>
+        <div class="mesh-blob blob-3"></div>
+    </div>
+
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-header">
+                <div class="logo-mark" style="background: linear-gradient(135deg, #a855f7, #3b82f6);">Æ</div>
+                <div class="brand-text" id="workspace-name-display" style="letter-spacing: 0.5px;">Aether</div>
+            </div>
+            <div class="admin-badge" id="creator-badge" style="border-color: #a855f7; color: #c084fc;">COLLABORATOR MODE</div>
+        </div>
+        <div class="sidebar-actions">
+            <button class="btn-ui-standard" style="width: 100%;" onclick="createNewChatSession()">+ New Session</button>
+        </div>
+        <div class="chat-list" id="sessions-container"></div>
+    </div>
+
+    <div class="main-chat">
+        <header>
+            <span id="active-chat-title" style="font-weight:600; font-size:0.92rem; color:var(--text-main);">New Medium Point</span>
+            <div class="header-actions">
+                <a href="aether-cast/index.html" class="btn-ui-standard btn-cast" title="Open Aether Cast">Kashyap Cast</a>
+                <button class="btn-ui-standard btn-ui-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openSettingsViewPanel()">⚙️ Protocols</button>
+            </div>
+        </header>
+
+        <div id="settings-fullscreen-view" class="settings-view-panel">
+            <div class="settings-max-boundary">
+                <div class="settings-nav-header">
+                    <h2 style="margin:0; font-size:1.3rem; font-weight:700; letter-spacing:-0.3px;">Autonomous System Matrix</h2>
+                    <button class="btn-ui-standard btn-ui-secondary" onclick="closeSettingsViewPanel()">← Return to Medium</button>
+                </div>
+
+                <div class="settings-grid-layout">
+                    <div class="settings-card">
+                        <h3>🔑 Core Infrastructure</h3>
+                        <div class="form-row">
+                            <label>Gemini API Token Key:</label>
+                            <input type="password" id="api-key-input" placeholder="AIzaSy...">
+                            <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text-muted); margin-top: 8px; cursor: pointer; user-select: none;">
+                                <input type="checkbox" id="use-default-key-checkbox" onchange="toggleApiKeyInputFieldVisibility()"> 
+                                Use Built-in Workspace Key Fallback
+                            </label>
+                        </div>
+                        <div class="form-row">
+                            <label>Model Deployment Identification Target:</label>
+                            <select id="model-id-input" style="width: 100%; height: 38px; background-color: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; border-radius: 6px; padding: 0 8px; outline: none; font-family: inherit; font-size: 0.85rem;">
+                                <optgroup label="Google Gemini" style="background:#14161a;">
+                                    <option value="gemini-3-flash-preview" selected>Gemini 3 Flash Preview</option>
+                                    <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                    <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                </optgroup>
+                                <optgroup label="OpenAI GPT Architecture" style="background:#14161a;">
+                                    <option value="gpt-4o">GPT-4o (Omni Engine)</option>
+                                    <option value="gpt-4o-mini">GPT-4o Mini</option>
+                                </optgroup>
+                                <optgroup label="xAI Grok Matrix" style="background:#14161a;">
+                                    <option value="grok-2">Grok 2</option>
+                                    <option value="grok-beta">Grok Beta</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>🎨 Theme Engine</h3>
+                        <div class="theme-selection-grid">
+                            <div class="theme-swatch-box active" id="ts-midnight" onclick="applyAestheticSkinLayout('midnight')">Midnight Matrix</div>
+                            <div class="theme-swatch-box" id="ts-liquid-glass" onclick="applyAestheticSkinLayout('liquid-glass')">Liquid Glass 💧</div>
+                            <div class="theme-swatch-box" id="ts-cyber-punch" onclick="applyAestheticSkinLayout('cyber-punch')">Cyber Punch</div>
+                            <div class="theme-swatch-box" id="ts-chalk-light" onclick="applyAestheticSkinLayout('chalk-light')">Chalk Light</div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>🤖 Autonomous Identity Status</h3>
+                        <div class="form-row">
+                            <label>Current Designated Core Name Symbol:</label>
+                            <input type="text" id="custom-identity-name-input" readonly style="opacity: 0.7; background: rgba(0,0,0,0.2);" placeholder="Aether">
+                        </div>
+                        <div class="form-row" style="margin-top: 12px;">
+                            <label>Append Output Custom Text Signature Rule:</label>
+                            <input type="text" id="custom-signature-input" placeholder="e.g., Confirmed inside Aether Matrix.">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-ui-standard" style="margin-top:2rem; min-width:160px;" onclick="saveSystemSettingsAndApply()">Save Configuration</button>
+            </div>
+        </div>
+
+        <div id="identity-verification-modal" class="modal">
+            <div class="modal-content">
+                <h3 style="margin-top:0; font-size:1.05rem; color: #3b82f6;">🔐 Security Clearance Required</h3>
+                <p style="font-size:0.85rem; line-height:1.5; color:var(--text-muted); margin: 8px 0 16px 0;">
+                    An identity claim matching the name <strong>Kashyap</strong> has triggered system verification guidelines. Prove your clearance to establish master runtime protocols.
+                </p>
+                <div style="border-top:1px solid var(--border); padding-top:12px;">
+                    <span style="font-size:0.8rem; color:var(--text-main); font-weight:600;">Verification Challenge:</span>
+                    <p style="font-size:0.88rem; margin:6px 0; color:var(--text-main);" id="challenge-question-label">What is the full name of your father?</p>
+                    <input type="text" id="verification-secret-response" class="verification-input" placeholder="Enter answer..." onkeypress="if(event.key==='Enter') executeIdentityChallengeAnalysis()">
+                </div>
+                <button class="btn-ui-standard" style="margin-top:16px; width:100%; background:linear-gradient(135deg, #10b981, #059669)" onclick="executeIdentityChallengeAnalysis()">Authenticate Creator</button>
+            </div>
+        </div>
+
+        <div id="chat-window"></div>
+
+        <div id="agentic-execution-terminal" style="display:none; background: rgba(6,7,9,0.95); border-top: 1px solid #a855f7; max-height: 160px; padding: 12px; font-family: monospace; font-size: 0.78rem; overflow-y: auto; color: #c084fc;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-weight: bold; font-family: sans-serif; letter-spacing: 0.3px;">
+                <span>⚡ AGENTIC INTERFACE RUNTIME INTERCEPT</span>
+                <span style="color:#10b981;" id="terminal-status-node">[PROCESSING]</span>
+            </div>
+            <div id="terminal-stream-log-output" style="color: #cbd5e1; line-height: 1.4;"></div>
+        </div>
+
+        <div class="attachment-preview" id="chips-preview-zone"></div>
+
+        <div class="input-box-wrapper">
+            <div class="input-container">
+                <button class="icon-btn" style="font-size:0.95rem;" onclick="document.getElementById('file-payload-router').click()">📎</button>
+                <input type="file" id="file-payload-router" multiple style="display: none" onchange="processIncomingFileStreams(this)">
+                
+                <input type="text" id="user-text-input" placeholder="Consult workspace environment..." onkeypress="if(event.key==='Enter') dispatchUserPayloadStream()">
+                
+                <button class="icon-btn btn-send" onclick="dispatchUserPayloadStream()">➔</button>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); text-align: center; margin-top: 4px;">
+                Active Engine Medium: <span id="current-engine-display" style="font-weight:600; color: #a855f7;">gemini-3-flash-preview</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

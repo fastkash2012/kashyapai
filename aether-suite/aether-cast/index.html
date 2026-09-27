@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aether Cast — Character Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="theme-midnight">
+
+    <div class="toast-notification-center" id="system-toast-layer"></div>
+
+    <div class="ambient-mesh-container">
+        <div class="mesh-blob blob-1"></div>
+        <div class="mesh-blob blob-2"></div>
+        <div class="mesh-blob blob-3"></div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="brand">
+            <div class="brand-header">
+                <div class="logo-mark">Æ</div>
+                <div class="brand-text" id="workspace-name-display">Aether</div>
+            </div>
+            <div class="admin-badge" id="studio-badge">CHARACTER STUDIO</div>
+        </div>
+        <div class="sidebar-actions">
+            <a href="../index.html" class="btn-ui-standard btn-ui-secondary" style="width:100%;text-decoration:none;box-sizing:border-box">← Kashyap AI</a>
+            <button class="btn-ui-standard" style="width:100%;margin-top:8px" onclick="openCharacterCreator()">+ New Character</button>
+            <button class="btn-ui-standard btn-ui-secondary" style="width:100%;margin-top:8px" onclick="showView('gallery')">Cast Gallery</button>
+        </div>
+        <div class="sidebar-section-label">Recent chats</div>
+        <div class="chat-list" id="sessions-container"></div>
+        <div class="sidebar-footer">
+            <button class="btn-ui-standard btn-ui-secondary" style="width:100%;padding:8px;font-size:0.8rem" onclick="openSettingsViewPanel()">Protocols</button>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-chat">
+        <!-- GALLERY VIEW -->
+        <div id="view-gallery" class="view-panel active">
+            <header class="view-header">
+                <div>
+                    <p class="eyebrow">Character studio</p>
+                    <h1 class="display-title">A cast, not a chatbot.</h1>
+                    <p class="lead">Shape personality, traits, and voice — then talk to them.</p>
+                </div>
+                <button class="btn-ui-standard" onclick="openCharacterCreator()">+ New Character</button>
+            </header>
+            <div class="view-scroll-body">
+                <div class="gallery-search-wrap">
+                    <input type="text" id="gallery-search" class="gallery-search" placeholder="Search by name, trait, or line…" oninput="renderGallery()">
+                </div>
+                <section class="gallery-section">
+                    <h2 class="section-label">Yours</h2>
+                    <div class="character-grid" id="gallery-yours"></div>
+                </section>
+                <section class="gallery-section">
+                    <h2 class="section-label">Studio roster</h2>
+                    <div class="character-grid" id="gallery-roster"></div>
+                </section>
+            </div>
+        </div>
+
+        <!-- CHAT VIEW -->
+        <div id="view-chat" class="view-panel">
+            <header class="chat-header">
+                <button class="icon-btn" onclick="showView('gallery')" title="Back to cast">←</button>
+                <div class="chat-header-identity" onclick="openCharacterProfile(activeCharacterId)">
+                    <div class="avatar-sm" id="chat-avatar"></div>
+                    <div>
+                        <div class="chat-header-name" id="active-chat-title">Character</div>
+                        <div class="chat-header-tag" id="active-chat-tagline"></div>
+                    </div>
+                </div>
+                <div class="chat-header-actions">
+                    <button class="btn-ui-standard btn-ui-secondary" style="padding:6px 12px;font-size:0.78rem" onclick="startNewChatWithActive()">New chat</button>
+                    <button class="btn-ui-standard btn-ui-secondary" style="padding:6px 12px;font-size:0.78rem" onclick="openCharacterEditor(activeCharacterId)">Edit</button>
+                    <button class="btn-ui-standard btn-ui-secondary" style="padding:6px 12px;font-size:0.78rem" onclick="openSettingsViewPanel()">⚙️</button>
+                </div>
+            </header>
+            <div id="chat-window"></div>
+            <div id="agentic-execution-terminal" style="display:none">
+                <div class="terminal-head">
+                    <span>⚡ AGENTIC INTERFACE RUNTIME INTERCEPT</span>
+                    <span id="terminal-status-node" style="color:#10b981">[PROCESSING]</span>
+                </div>
+                <div id="terminal-stream-log-output"></div>
+            </div>
+            <div class="attachment-preview" id="chips-preview-zone"></div>
+            <div class="input-box-wrapper">
+                <div class="input-container">
+                    <button class="icon-btn" onclick="document.getElementById('file-payload-router').click()">📎</button>
+                    <input type="file" id="file-payload-router" multiple style="display:none" onchange="processIncomingFileStreams(this)">
+                    <input type="text" id="user-text-input" placeholder="Message…" onkeypress="if(event.key==='Enter') dispatchUserPayloadStream()">
+                    <button class="icon-btn btn-send" onclick="dispatchUserPayloadStream()">➔</button>
+                </div>
+                <div class="engine-line">
+                    Active Engine: <span id="current-engine-display">gemini-3-flash-preview</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARACTER CREATOR / EDITOR -->
+        <div id="view-creator" class="view-panel">
+            <header class="view-header compact">
+                <button class="btn-ui-standard btn-ui-secondary" onclick="showView('gallery')">← Cast</button>
+                <h2 id="creator-title">New character</h2>
+                <button class="btn-ui-standard" onclick="saveCharacterFromForm()">Save character</button>
+            </header>
+            <div class="creator-layout">
+                <div class="creator-form">
+                    <div class="settings-card">
+                        <h3>Identity</h3>
+                        <div class="form-row">
+                            <label>Name</label>
+                            <input type="text" id="cf-name" placeholder="Mira Vale" maxlength="48">
+                        </div>
+                        <div class="form-row">
+                            <label>Tagline</label>
+                            <input type="text" id="cf-tagline" placeholder="A writing partner who finds the avoided sentence." maxlength="140">
+                        </div>
+                        <div class="form-row">
+                            <label>Greeting — first line they speak</label>
+                            <textarea id="cf-greeting" rows="3" placeholder="Don't pitch me the whole book — give me the line that's stuck."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label>Avatar hue (0–360)</label>
+                            <input type="range" id="cf-hue" min="0" max="360" value="215" oninput="updateCreatorPreview()">
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>Personality dials</h3>
+                        <div class="slider-grid" id="personality-sliders"></div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>Traits <span class="hint">(up to 6)</span></h3>
+                        <div class="trait-cloud" id="trait-cloud"></div>
+                        <div class="form-row row-inline">
+                            <input type="text" id="cf-custom-trait" placeholder="Custom trait" onkeypress="if(event.key==='Enter'){addCustomTrait();event.preventDefault()}">
+                            <button class="btn-ui-standard btn-ui-secondary" onclick="addCustomTrait()">Add</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>Voice & world</h3>
+                        <div class="form-row">
+                            <label>Speaking style</label>
+                            <textarea id="cf-style" rows="3" placeholder="Cadence, diction, what they never say."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label>Quirks</label>
+                            <textarea id="cf-quirks" rows="2" placeholder="Tells, habits, forbidden words."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label>Backstory</label>
+                            <textarea id="cf-backstory" rows="4" placeholder="Who they were before this conversation."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label>Scenario</label>
+                            <textarea id="cf-scenario" rows="3" placeholder="Where the chat begins."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label>Notes about you (injected as memory)</label>
+                            <textarea id="cf-notes" rows="2" placeholder="Things this character should know about you."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>Example dialogue</h3>
+                        <div id="example-dialogues"></div>
+                        <button class="btn-ui-standard btn-ui-secondary" style="margin-top:10px" onclick="addExampleRow()">+ Add example</button>
+                    </div>
+                </div>
+                <aside class="creator-preview">
+                    <div class="preview-card">
+                        <div class="avatar-lg" id="preview-avatar"></div>
+                        <h3 class="font-display" id="preview-name">Unnamed</h3>
+                        <p id="preview-tagline">A presence, still taking shape.</p>
+                        <ul class="trait-pills" id="preview-traits"></ul>
+                        <p class="preview-greeting" id="preview-greeting"></p>
+                    </div>
+                </aside>
+            </div>
+        </div>
+
+        <!-- CHARACTER PROFILE -->
+        <div id="view-profile" class="view-panel">
+            <header class="view-header compact">
+                <button class="btn-ui-standard btn-ui-secondary" onclick="showView('gallery')">← Cast</button>
+                <div></div>
+                <div class="chat-header-actions">
+                    <button class="btn-ui-standard" onclick="startChatWithCharacter(activeCharacterId)">Chat</button>
+                    <button class="btn-ui-standard btn-ui-secondary" onclick="openCharacterEditor(activeCharacterId)">Edit</button>
+                    <button class="btn-ui-standard btn-ui-secondary" onclick="duplicateCharacter(activeCharacterId)">Duplicate</button>
+                    <button class="btn-ui-standard btn-ui-secondary danger" id="profile-delete-btn" onclick="deleteCharacter(activeCharacterId)">Delete</button>
+                </div>
+            </header>
+            <div class="profile-body" id="profile-body"></div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div id="settings-fullscreen-view" class="settings-view-panel">
+            <div class="settings-max-boundary">
+                <div class="settings-nav-header">
+                    <h2 style="margin:0;font-size:1.3rem;font-weight:700">Autonomous System Matrix</h2>
+                    <button class="btn-ui-standard btn-ui-secondary" onclick="closeSettingsViewPanel()">← Return</button>
+                </div>
+                <div class="settings-grid-layout">
+                    <div class="settings-card">
+                        <h3>🔑 Core Infrastructure</h3>
+                        <div class="form-row">
+                            <label>Gemini API Token Key:</label>
+                            <input type="password" id="api-key-input" placeholder="AIzaSy...">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="use-default-key-checkbox" onchange="toggleApiKeyInputFieldVisibility()">
+                                Use Built-in Workspace Key Fallback
+                            </label>
+                        </div>
+                        <div class="form-row">
+                            <label>Model Deployment Identification Target:</label>
+                            <select id="model-id-input">
+                                <optgroup label="Google Gemini">
+                                    <option value="gemini-3-flash-preview" selected>Gemini 3 Flash Preview</option>
+                                    <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                    <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                </optgroup>
+                                <optgroup label="OpenAI GPT Architecture">
+                                    <option value="gpt-4o">GPT-4o (Omni Engine)</option>
+                                    <option value="gpt-4o-mini">GPT-4o Mini</option>
+                                </optgroup>
+                                <optgroup label="xAI Grok Matrix">
+                                    <option value="grok-2">Grok 2</option>
+                                    <option value="grok-beta">Grok Beta</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <h3>🎨 Theme Engine</h3>
+                        <div class="theme-selection-grid">
+                            <div class="theme-swatch-box active" id="ts-midnight" onclick="applyAestheticSkinLayout('midnight')">Midnight Matrix</div>
+                            <div class="theme-swatch-box" id="ts-liquid-glass" onclick="applyAestheticSkinLayout('liquid-glass')">Liquid Glass</div>
+                            <div class="theme-swatch-box" id="ts-cyber-punch" onclick="applyAestheticSkinLayout('cyber-punch')">Cyber Punch</div>
+                            <div class="theme-swatch-box" id="ts-chalk-light" onclick="applyAestheticSkinLayout('chalk-light')">Chalk Light</div>
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <h3>📝 Signature</h3>
+                        <div class="form-row">
+                            <label>Append Output Custom Text Signature:</label>
+                            <input type="text" id="custom-signature-input" placeholder="e.g., Confirmed inside Aether Matrix.">
+                        </div>
+                        <div class="form-row" style="margin-top:12px">
+                            <label>Workspace name (legacy identity)</label>
+                            <input type="text" id="custom-identity-name-input" placeholder="Aether">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-ui-standard" style="margin-top:2rem;min-width:160px" onclick="saveSystemSettingsAndApply()">Save Configuration</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
