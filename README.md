@@ -224,4 +224,4 @@ This repository
 
 ## 📜 License
 
-Add your preferred license here if you plan to distribute the project publicly.
+by the cool kids official, idk
